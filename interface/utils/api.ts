@@ -19,6 +19,7 @@ export interface CreatePoolPayload {
   description: string;
   image: string;
   address: string;
+  questions: string[];
 }
 
 export interface CreateModelResponse {
@@ -46,6 +47,16 @@ export interface Pool {
   description: string;
   image: string;
   address?: string;
+  questions: { [key: number]: string };
+}
+
+export interface GetPoolResponse {
+  pool: Pool;
+  message?: string; // Optional
+}
+
+export interface SubmitAnswerPayload {
+  query: string;
 }
 
 export interface GetPoolsResponse {
@@ -53,7 +64,9 @@ export interface GetPoolsResponse {
   message?: string; // Optional
 }
 
-const API_BASE_URL = "http://localhost:8000";
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+// const API_BASE_URL = "https://a0f6-223-255-254-102.ngrok-free.app";
+const API_BASE_URL = "http://localhost:8000"
 async function createModel(
   payload: CreateModelPayload
 ): Promise<CreateModelResponse> {
@@ -85,8 +98,8 @@ async function predict(
 
 async function createPool(
   payload: CreatePoolPayload
-): Promise<CreateModelResponse> {
-  const response = await axios.post<CreateModelResponse>(
+): Promise<Pool> {
+  const response = await axios.post<Pool>(
     `${API_BASE_URL}/create-pool`,
     payload
   );
@@ -100,4 +113,85 @@ async function getPools(): Promise<GetPoolsResponse> {
   return response.data;
 }
 
-export { createModel, listModels, predict, createPool, getPools };
+async function getPool(poolId: string): Promise<GetPoolResponse> {
+  const response = await axios.get<GetPoolResponse>(
+    `${API_BASE_URL}/get-pool/${poolId}`
+  );
+  return response.data;
+}
+
+async function submitAnswer(
+  poolId: string,
+  questionId: number,
+  payload: SubmitAnswerPayload
+): Promise<void> {
+  await axios.post(
+    `${API_BASE_URL}/submit-answer/${poolId}/${questionId}`,
+    payload
+  );
+}
+// ... existing code ...
+
+export interface StoreQuestionSolutionPayload {
+  question: string;
+  solution: string;
+  address?: string;
+}
+
+export interface GetPoolsAnswersPayload {
+  pool_id: string;
+}
+
+export interface Answer {
+  question: string;
+  solution: string;
+  address?: string;
+}
+
+export interface GetPoolsAnswersResponse {
+  answers: Answer[];
+  message?: string;
+}
+
+
+async function storeQuestionAnswer(
+  poolId: string,
+  payload: StoreQuestionSolutionPayload
+): Promise<{ pool_id: string; message: string }> {
+  const response = await axios.post(
+    `${API_BASE_URL}/store-question-answer/${poolId}`,
+    payload
+  );
+  return response.data;
+}
+
+async function getPoolsAnswers(
+  payload: GetPoolsAnswersPayload
+): Promise<GetPoolsAnswersResponse> {
+  const response = await axios.post<GetPoolsAnswersResponse>(
+    `${API_BASE_URL}/get-pools-answers`,
+    payload
+  );
+  return response.data;
+}
+
+export interface FindPoolsParticipatedPayload {
+  address: string;
+}
+
+export interface FindPoolsParticipatedResponse {
+  pools_participated: string[];
+  message?: string;
+}
+
+async function findPoolsParticipated(
+  payload: FindPoolsParticipatedPayload
+): Promise<FindPoolsParticipatedResponse> {
+  const response = await axios.post<FindPoolsParticipatedResponse>(
+    `${API_BASE_URL}/find-pools-participated`,
+    payload
+  );
+  return response.data;
+}
+
+export { findPoolsParticipated, createModel, listModels, predict, createPool, getPools, getPool, submitAnswer, storeQuestionAnswer, getPoolsAnswers };
