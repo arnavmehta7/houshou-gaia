@@ -9,7 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from 'uuid';
 import { uploadImgToIPFS, uploadForm } from "@/utils/ipfs";
 import { createPool } from "@/utils/contracts";
-import { getPool } from "@/utils/api";
 
 const CreateModel = () => {
     const [formInput, setFormInput] = useState({
@@ -26,12 +25,9 @@ const CreateModel = () => {
     const [loaders, setLoaders] = useState({
         submit: false,
         image: false,
+        createAccountLoader: false,
     });
 
-    async function handleFormInput(poolId: string) {
-        const response = await getPool(poolId);
-        // Handle the response and update the state or navigate to the bounty details page
-      }
     async function handleImageChange() {
         const fileInput: any = document.getElementById("cover");
         const fileName: any = fileInput.files[0].name;
@@ -48,6 +44,7 @@ const CreateModel = () => {
 
         const formMetadata = await uploadForm(formInput);
         await createPool(formInput.pool, formInput.duration, uuid, formMetadata);
+
         toast.success("Form Created!", {
             position: "bottom-left",
             autoClose: 5000,

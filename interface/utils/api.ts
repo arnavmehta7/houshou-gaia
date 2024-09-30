@@ -19,7 +19,6 @@ export interface CreatePoolPayload {
   description: string;
   image: string;
   address: string;
-  questions: string[];
 }
 
 export interface CreateModelResponse {
@@ -47,16 +46,6 @@ export interface Pool {
   description: string;
   image: string;
   address?: string;
-  questions: { [key: number]: string };
-}
-
-export interface GetPoolResponse {
-  pool: Pool;
-  message?: string; // Optional
-}
-
-export interface SubmitAnswerPayload {
-  query: string;
 }
 
 export interface GetPoolsResponse {
@@ -96,8 +85,8 @@ async function predict(
 
 async function createPool(
   payload: CreatePoolPayload
-): Promise<Pool> {
-  const response = await axios.post<Pool>(
+): Promise<CreateModelResponse> {
+  const response = await axios.post<CreateModelResponse>(
     `${API_BASE_URL}/create-pool`,
     payload
   );
@@ -111,66 +100,4 @@ async function getPools(): Promise<GetPoolsResponse> {
   return response.data;
 }
 
-async function getPool(poolId: string): Promise<GetPoolResponse> {
-  const response = await axios.get<GetPoolResponse>(
-    `${API_BASE_URL}/get-pool/${poolId}`
-  );
-  return response.data;
-}
-
-async function submitAnswer(
-  poolId: string,
-  questionId: number,
-  payload: SubmitAnswerPayload
-): Promise<void> {
-  await axios.post(
-    `${API_BASE_URL}/submit-answer/${poolId}/${questionId}`,
-    payload
-  );
-}
-// ... existing code ...
-
-export interface StoreQuestionSolutionPayload {
-  question: string;
-  solution: string;
-  address?: string;
-}
-
-export interface GetPoolsAnswersPayload {
-  pool_id: string;
-}
-
-export interface Answer {
-  question: string;
-  solution: string;
-  address?: string;
-}
-
-export interface GetPoolsAnswersResponse {
-  answers: Answer[];
-  message?: string;
-}
-
-
-async function storeQuestionAnswer(
-  poolId: string,
-  payload: StoreQuestionSolutionPayload
-): Promise<{ pool_id: string; message: string }> {
-  const response = await axios.post(
-    `${API_BASE_URL}/store-question-answer/${poolId}`,
-    payload
-  );
-  return response.data;
-}
-
-async function getPoolsAnswers(
-  payload: GetPoolsAnswersPayload
-): Promise<GetPoolsAnswersResponse> {
-  const response = await axios.post<GetPoolsAnswersResponse>(
-    `${API_BASE_URL}/get-pools-answers`,
-    payload
-  );
-  return response.data;
-}
-
-export { createModel, listModels, predict, createPool, getPools, getPool, submitAnswer, storeQuestionAnswer, getPoolsAnswers };
+export { createModel, listModels, predict, createPool, getPools };

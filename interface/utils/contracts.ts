@@ -85,7 +85,7 @@ export async function fetchAllPools() {
                 image: meta.data.image,
                 uuid: i._uuid.toString(),
                 metadataUri: i.metadata.toString(),
-                poolContract: i._contract.toString(),
+                poolContract: i._contractAddress,
             };
             return item;
         })
@@ -103,17 +103,16 @@ export async function fetchCreatedPools() {
 
     const items = await Promise.all(
         data.map(async (i: any) => {
-            console.log(i);
-            const allForms = await axios.get(i.metadata.toString());
-            const meta = await axios.get(allForms.data.formUri1);
+            const meta = await axios.get(i.metadata.toString());
             const item = {
-                name: meta.data.name,
-                pool: meta.data.pool,
-                duration: meta.data.duration,
-                image: meta.data.image,
+                name: meta.data._name,
+                pool: meta.data._pool,
+                duration: meta.data._duration,
+                description: meta.data._description,
+                image: meta.data._image,
                 uuid: i._uuid.toString(),
                 metadataUri: i.metadata.toString(),
-                poolContract: i._contract.toString(),
+                poolContract: i._contractAddress,
             };
             return item;
         })
@@ -122,9 +121,4 @@ export async function fetchCreatedPools() {
     createdPools = items;
     console.log(items);
     return items;
-}
-
-export const getAddress = async () => {
-    const user = await getUserAddress();
-    return user;
 }

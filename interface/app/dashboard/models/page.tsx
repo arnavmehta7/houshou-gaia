@@ -9,7 +9,6 @@ import SideBar from "@/components/SideBar";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight"; // Import rehype-highlight for code block styling
 import "highlight.js/styles/github-dark.css"; // Import a highlight.js theme for code block styling
-import { getAddress } from "@/utils/contracts";
 
 const Models = () => {
     const [models, setModels] = useState<ModelInfo[]>([]);
@@ -19,7 +18,7 @@ const Models = () => {
 
     useEffect(() => {
         async function fetchModels() {
-            const userAddress = await getAddress(); // TODO: Get the user's address
+            const userAddress = "papi"; // TODO: Get the user's address
             const fetchedModels = await listModels(userAddress);
             setModels(fetchedModels);
         }
