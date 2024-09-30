@@ -1,0 +1,9 @@
+sentence-transformers
+pymongo
+fastapi
+uvicorn
+pymongo
+faiss-cpu
+openai
+python-dotenv
+anthropic
